@@ -1,0 +1,52 @@
+\documentclass[a4paper]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathpazo}
+
+% \usepackage[a4paper,left=3cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+
+\newtheorem{claim}{Claim}
+
+\begin{document}
+
+For any formula $\varphi$, let $\underline{\varphi}_k$ be the formula $\varphi$, where every existentially quantified variable of bit-width $n$ is restricted to have zeroes on $n-k$ most significant bits. Similarly, formula $\overline{\varphi}_k$ is the formula $\varphi$ with every universally quantified variable of bit-width $n$ restricted to have zeroes on $n-k$ most significant bits.
+
+That is -- in $\underline{\varphi}_k$ all subformulas of form $\exists (x : n) . \; \psi$ get replaced by 
+\[
+  \exists (x : n) . \; \mathrm{extract}(x, k, n-1) = 0_{n-k} \wedge \psi
+\]
+and in $\overline{\varphi}_k$ all subformulas of form $\forall (x : n) . \; \psi$ get replaced by
+\[
+  \forall (x : n) . \; \mathrm{extract}(x, k, n-1) \not = 0_{n-k} \vee \psi.
+\]
+
+\begin{claim}
+  For any interpretation of variables $\alpha$ and formula $\varphi$ in the negation normal form, $\alpha \models \underline{\varphi}$ implies $\alpha \models \varphi$.
+\end{claim}
+
+\begin{proof}
+  By induction on the structure of the formula $\varphi$:
+  \begin{itemize}
+    \item If $\varphi \equiv P(t_1, \dots, t_m)$ for an $m$-ary predicate symbol $P$ and terms $t_1, \dots, t_m$, then clearly for any $\alpha$ it holds $\alpha \models \varphi$ iff $\alpha \models \underline{\varphi}_k$, since $\varphi \equiv \underline{\varphi}_k$.
+    \item If $\varphi \equiv \neg P(t_1, \dots, t_m)$, then again $\varphi \equiv \underline{\varphi}_k$.
+    \item If $\varphi \equiv \psi \wedge \rho$, then $\underline{\varphi}_k \equiv \underline{\psi \wedge \rho}_k \equiv \underline{\psi}_k \wedge \underline{\rho}_k$. Let $\alpha$ be any interpretation of variables such that $\alpha \models \underline{\psi}_k \wedge \underline{\rho}_k$. Then from the induction hypothesis it follows $\alpha \models \psi$ and $\alpha \models \rho$.
+    \item If $\varphi \equiv \psi \vee \rho$, then $\underline{\varphi}_k \equiv \underline{\psi \vee \rho}_k \equiv \underline{\psi}_k \vee \underline{\rho}_k$. Let $\alpha$ be any interpretation of variables such that $\alpha \models \underline{\psi}_k \vee \underline{\rho}_k$. Then from the induction hypothesis it follows $\alpha \models \psi$ or $\alpha \models \rho$.
+    \item If $\varphi \equiv \exists (x : n) . \; \psi$, then $\underline{\varphi}_k \equiv \exists (x : n) . \; \mathrm{extract}(x, k, n-1) = 0_{n-k} \wedge \underline{\psi}_k$. Let $\alpha$ be any interpretation of variables such that 
+      \[ 
+          \alpha \models \exists (x : n) . \; \mathrm{extract}(x, k, n-1) = 0_{n-k} \wedge \underline{\psi}_k. 
+      \]
+      Therefore 
+      \[ 
+         \alpha[x \leftarrow a] \models \mathrm{extract}(x, k, n-1) = 0_{n-k} \wedge \underline{\psi}_k
+      \] 
+      for some bit-vector value $a$. Then also $\alpha[x \leftarrow a] \models \underline{\psi}_k$ and from the induction hypothesis $\alpha[x \leftarrow a] \models \psi$. So we get $\alpha \models \exists (x : n). \; \psi$ as required.
+    \item If $\varphi \equiv \forall (x : n) \; \psi$, then $\underline{\varphi}_k \equiv \forall (x : n) \; \underline{\psi}_k$. Let $\alpha$ be any interpretation of variables such that $\alpha \models  \forall (x : n) . \; \underline{\psi}_k$. That is $\alpha[x \leftarrow a] \models \underline{\psi}_k$ for any bit-vector value $a$. From the induction hypothesis $\alpha[x \leftarrow a] \models \psi$ for any bit-vector value $a$, and so $\alpha \models \forall (x : n) . \; \psi$.
+  \end{itemize}  
+\end{proof}
+
+\begin{claim}
+  For any interpretation of variables $\alpha$ and formula $\varphi$ in the negation normal form, $\alpha \models \varphi$ implies $\alpha \models \overline{\varphi}_k$.
+\end{claim}
+
+\end{document}
